@@ -1,0 +1,33 @@
+@model DojoActivity
+
+<h1>@Model.Title</h1>
+<h3>Event Coordinator: @Model.Coordinator.Name</h3>
+<h3>Description:</h3>
+<p>@Model.Description</p>
+<h3>Guests:</h3>
+<ul>
+@{
+    if(Model.Atendees == null)
+    {
+        <p>Noone's attending yet</p>
+    }else{
+        foreach(Attendance a in @Model.Atendees)
+        {
+            <li>@a.Atendee.Name</li>
+        }
+    }
+}
+</ul>
+@{
+    if(Model.UserId == @ViewBag.LoggedInUser.UserId)
+    {
+        <td><a href="/delete/@Model.DojoActivityId">Delete</a></td>
+    }else{
+        if(Model.Atendees.Any(f => f.UserId == ViewBag.LoggedInUser.UserId))
+            {
+                <td><a href="/leave/@Model.DojoActivityId/@ViewBag.LoggedInUser.UserId" class="btn btn-primary">Leave</a></td>
+            }else {
+                <td><a href="/join/@Model.DojoActivityId/@ViewBag.LoggedInUser.UserId" class="btn btn-primary">Join</a></td>
+            }
+    }
+}

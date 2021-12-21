@@ -1,0 +1,55 @@
+<h1>Dojo Activity Center, welcome @ViewBag.LoggedInUser.Name</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Activity</th>
+            <th scope="col">Date and Time</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Event Coordinator</th>
+            <th scope="col">No. of Participants</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if(ViewBag.AllActivities == null)
+            {
+                <h4>No Activities yet</h4>
+            }else{
+                foreach(DojoActivity w in ViewBag.AllActivities)
+                {
+                    int yearCompare = @w.ActivityDate.Year - @DateTime.Now.Year;
+                    int monthCompare = @w.ActivityDate.Month - @DateTime.Now.Month;
+                    int dayCompare = @w.ActivityDate.Day - @DateTime.Now.Day;
+                    if (0>yearCompare || yearCompare == 0 && 0>monthCompare || yearCompare == 0 && monthCompare == 0 && 0>dayCompare)
+                    {
+                        continue;
+                    }else{
+                        <tr>
+                            <td><a href="/activity/@w.DojoActivityId">@w.Title</a></td>
+                            <td>@w.ActivityDate.ToString("MMMM dd, yyyy @")  @w.ActivityTime.ToString("hh:mm tt")</td>
+                            <td>@w.Duration @w.DurationUnit</td>
+                            <td>@w.Coordinator.Name</td>
+                            <td>@w.Atendees.Count</td>
+                            @{
+                                if(@w.Coordinator.UserId == @ViewBag.LoggedInUser.UserId)
+                                {
+                                    <td><a href="/delete/@w.DojoActivityId">Delete</a></td>
+                                }else{
+                                    if(w.Atendees.Any(f => f.UserId == ViewBag.LoggedInUser.UserId))
+                                        {
+                                            <td><a href="/leave/@w.DojoActivityId/@ViewBag.LoggedInUser.UserId" class="btn btn-primary">Leave</a></td>
+                                        }else {
+                                            <td><a href="/join/@w.DojoActivityId/@ViewBag.LoggedInUser.UserId" class="btn btn-primary">Join</a></td>
+                                        }
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            }
+        }
+    </tbody>
+</table>
+<a href="/newActivity" class="btn btn-primary">Add New Activity</a>
